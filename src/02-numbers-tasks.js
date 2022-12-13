@@ -7,7 +7,6 @@
  *                                                                                           *
  ******************************************************************************************* */
 
-
 /**
  * Returns an area of a rectangle given by width and height.
  *
@@ -22,7 +21,6 @@
 function getRectangleArea(width, height) {
   return width * height;
 }
-
 
 /**
  * Returns a circumference of circle given by radius.
@@ -90,7 +88,6 @@ function getLinearEquationRoot(a, b) {
   return -b / a;
 }
 
-
 /**
  * Returns an angle (in radians) between two vectors given by xi and yi,
  * coordinates in Cartesian plane.
@@ -110,7 +107,9 @@ function getLinearEquationRoot(a, b) {
  *   (0,1) (1,2)     => 0
  */
 function getAngleBetweenVectors(x1, y1, x2, y2) {
-  return Math.acos((x1 * x2 + y1 * y2) / (Math.hypot(x1, y1) * Math.hypot(x2, y2)));
+  const scalarProd = x1 * x2 + y1 * y2;
+  const modMult = Math.hypot(x1, y1) * Math.hypot(x2, y2);
+  return Math.acos(scalarProd / modMult);
 }
 
 /**
@@ -125,10 +124,9 @@ function getAngleBetweenVectors(x1, y1, x2, y2) {
  *     5     => 5
  *     0     => 0
  */
-function getLastDigit(/* value */) {
-  throw new Error('Not implemented');
+function getLastDigit(value) {
+  return value.toString().slice(-1);
 }
-
 
 /**
  * Returns a number by given string representation.
@@ -141,8 +139,8 @@ function getLastDigit(/* value */) {
  *     '37'     => 37
  * '-525.5'     => -525.5
  */
-function parseNumberFromString(/* value */) {
-  throw new Error('Not implemented');
+function parseNumberFromString(value) {
+  return Number(value);
 }
 
 /**
@@ -158,10 +156,9 @@ function parseNumberFromString(/* value */) {
  *   3,3,3   => 5.196152422706632
  *   1,2,3   => 3.741657386773941
  */
-function getParallelepipedDiagonal(/* a, b, c */) {
-  throw new Error('Not implemented');
+function getParallelepipedDiagonal(a, b, c) {
+  return Math.sqrt(a * a + b * b + c * c);
 }
-
 
 /**
  * Returns the number rounded to specified power of 10.
@@ -180,8 +177,8 @@ function getParallelepipedDiagonal(/* a, b, c */) {
  *   1678, 2  => 1700
  *   1678, 3  => 2000
  */
-function roundToPowerOfTen(/* num, pow */) {
-  throw new Error('Not implemented');
+function roundToPowerOfTen(num, pow) {
+  return Math.round(num / 10 ** pow) * 10 ** pow;
 }
 
 /**
@@ -201,8 +198,15 @@ function roundToPowerOfTen(/* num, pow */) {
  *   16 => false
  *   17 => true
  */
-function isPrime(/* n */) {
-  throw new Error('Not implemented');
+function isPrime(n) {
+  if (n === 0 || n === 1 || n < 0) {
+    return false;
+  }
+
+  for (let i = 2; i * i <= n; i += 1) {
+    if (n % i === 0) return false;
+  }
+  return true;
 }
 
 /**
@@ -220,8 +224,9 @@ function isPrime(/* n */) {
  *   toNumber(42, 0) => 42
  *   toNumber(new Number(42), 0) => 42
  */
-function toNumber(/* value, def */) {
-  throw new Error('Not implemented');
+function toNumber(value, def) {
+  const num = Number(value);
+  return !Number.isNaN(num) ? num : def;
 }
 
 module.exports = {
