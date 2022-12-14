@@ -453,10 +453,10 @@ function sortCitiesArray(arr) {
  *           [0,0,0,0,1]]
  */
 function getIdentityMatrix(n) {
-  return new Array(n).fill(new Array(n).fill(0)).map((el, idx) => el.map((_, i) => {
-    if (i === idx) return 1;
-    return 0;
-  }));
+  return new Array(n)
+    .fill(new Array(n).fill(0))
+    .map((el, idx) => el
+      .map((_, i) => (i === idx ? 1 : 0)));
 }
 
 /**
