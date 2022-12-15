@@ -6,7 +6,6 @@
  *                                                                                                *
  ************************************************************************************************ */
 
-
 /**
  * Returns the rectangle object with width and height parameters and getArea() method
  *
@@ -26,7 +25,6 @@ function Rectangle(width, height) {
   this.getArea = () => this.width * this.height;
 }
 
-
 /**
  * Returns the JSON representation of specified object
  *
@@ -40,7 +38,6 @@ function Rectangle(width, height) {
 function getJSON(obj) {
   return JSON.stringify(obj);
 }
-
 
 /**
  * Returns the object of specified type from JSON representation
@@ -58,7 +55,6 @@ function fromJSON(proto, json) {
   Object.setPrototypeOf(res, proto);
   return res;
 }
-
 
 /**
  * Css selectors builder
@@ -115,35 +111,58 @@ function fromJSON(proto, json) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  resStr: '',
+  combineArr: [],
+
+  element(value) {
+    this.resStr += value;
+    return this;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.resStr += `#${value}`;
+    return this;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    this.resStr += `.${value}`;
+    return this;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.resStr += `[${value}]`;
+    return this;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    this.resStr += `:${value}`;
+    return this;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.resStr += `::${value}`;
+    return this;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    this.combineArr;
+
+    return this;
+  },
+
+  stringify() {
+    this.prevRes = this.resStr;
+    this.resStr = '';
+    this.combineArr.length = 0;
+    return this.prevRes;
   },
 };
 
+const builder = cssSelectorBuilder;
+console.log(builder.element('a').id('main').stringify());
+console.log(
+  builder.id('main').class('container').class('editable').stringify()
+);
 
 module.exports = {
   Rectangle,
