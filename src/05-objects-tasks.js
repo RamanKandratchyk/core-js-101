@@ -204,16 +204,13 @@ const cssSelectorBuilder = {
   },
 
   CombineClassConstructor(selector1, combinator, selector2) {
-    return class {
-      constructor() {
-        this.selector1 = selector1;
-        this.combinator = combinator;
-        this.selector2 = selector2;
-        this.combResStr = '';
-        this.combine(this.selector1, this.combinator, this.selector2);
-      }
+    return function CombineClass() {
+      this.selector1 = selector1;
+      this.combinator = combinator;
+      this.selector2 = selector2;
+      this.combResStr = '';
 
-      combine(sel1, comb, sel2) {
+      this.combine = function combFunc(sel1, comb, sel2) {
         if (sel1.classResStr) {
           this.combResStr += sel1.classResStr;
         } else {
@@ -228,11 +225,13 @@ const cssSelectorBuilder = {
           this.combResStr += sel2.combResStr;
         }
         return this;
-      }
+      };
 
-      stringify() {
+      this.stringify = function stringifyFunc() {
         return this.combResStr;
-      }
+      };
+
+      this.combine(this.selector1, this.combinator, this.selector2);
     };
   },
 

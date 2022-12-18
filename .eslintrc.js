@@ -16,6 +16,5 @@ module.exports = {
     ecmaVersion: 2018,
   },
   rules: {
-    "max-classes-per-file": ["error", 3]
   },
 };
