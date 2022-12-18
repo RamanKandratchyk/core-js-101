@@ -111,58 +111,178 @@ function fromJSON(proto, json) {
  */
 
 const cssSelectorBuilder = {
-  resStr: '',
-  combineArr: [],
+  validArr: [],
+
+  SelectorClassConstructor(method, value) {
+    return class {
+      constructor() {
+        this.method = method;
+        this.value = value;
+        this.classResStr = '';
+        cssSelectorBuilder.validArr.length = 0;
+        this.sampleOccur = ['element', 'id', 'pseudoElement'];
+        this.sampleOrder = [
+          'element',
+          'id',
+          'class',
+          'attr',
+          'pseudoClass',
+          'pseudoElement',
+        ];
+        this[this.method](this.value);
+      }
+
+      validArrCheck(arr) {
+        this.sampleOccur.forEach((item) => {
+          if (arr.indexOf(item) !== arr.lastIndexOf(item)) {
+            throw new Error(
+              'Element, id and pseudo-element should not occur more then one time inside the selector',
+            );
+          }
+        });
+
+        this.sampleOrder.forEach((item, idx, initArr) => {
+          initArr.slice(idx).forEach((sliceEl) => {
+            if (
+              arr.indexOf(sliceEl) !== -1
+              && arr.indexOf(item) > arr.indexOf(sliceEl)
+            ) {
+              throw new Error(
+                'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+              );
+            }
+          });
+        });
+      }
+
+      element(str) {
+        this.classResStr += str;
+        cssSelectorBuilder.validArr.push('element');
+        this.validArrCheck(cssSelectorBuilder.validArr);
+        return this;
+      }
+
+      id(str) {
+        this.classResStr += `#${str}`;
+        cssSelectorBuilder.validArr.push('id');
+        this.validArrCheck(cssSelectorBuilder.validArr);
+        return this;
+      }
+
+      class(str) {
+        this.classResStr += `.${str}`;
+        cssSelectorBuilder.validArr.push('class');
+        this.validArrCheck(cssSelectorBuilder.validArr);
+        return this;
+      }
+
+      attr(str) {
+        this.classResStr += `[${str}]`;
+        cssSelectorBuilder.validArr.push('attr');
+        this.validArrCheck(cssSelectorBuilder.validArr);
+        return this;
+      }
+
+      pseudoClass(str) {
+        this.classResStr += `:${str}`;
+        cssSelectorBuilder.validArr.push('pseudoClass');
+        this.validArrCheck(cssSelectorBuilder.validArr);
+        return this;
+      }
+
+      pseudoElement(str) {
+        this.classResStr += `::${str}`;
+        cssSelectorBuilder.validArr.push('pseudoElement');
+        this.validArrCheck(cssSelectorBuilder.validArr);
+        return this;
+      }
+
+      stringify() {
+        return this.classResStr;
+      }
+    };
+  },
+
+  CombineClassConstructor(selector1, combinator, selector2) {
+    return class {
+      constructor() {
+        this.selector1 = selector1;
+        this.combinator = combinator;
+        this.selector2 = selector2;
+        this.combResStr = '';
+        this.combine(this.selector1, this.combinator, this.selector2);
+      }
+
+      combine(sel1, comb, sel2) {
+        if (sel1.classResStr) {
+          this.combResStr += sel1.classResStr;
+        } else {
+          this.combResStr += sel1.combResStr;
+        }
+
+        this.combResStr += ` ${comb} `;
+
+        if (sel2.classResStr) {
+          this.combResStr += sel2.classResStr;
+        } else {
+          this.combResStr += sel2.combResStr;
+        }
+        return this;
+      }
+
+      stringify() {
+        return this.combResStr;
+      }
+    };
+  },
+
+  // ****************************************
 
   element(value) {
-    this.resStr += value;
-    return this;
+    const ElementClass = this.SelectorClassConstructor('element', value);
+    return new ElementClass();
   },
 
   id(value) {
-    this.resStr += `#${value}`;
-    return this;
+    const IdClass = this.SelectorClassConstructor('id', value);
+    return new IdClass();
   },
 
   class(value) {
-    this.resStr += `.${value}`;
-    return this;
+    const ClassClass = this.SelectorClassConstructor('class', value);
+    return new ClassClass();
   },
 
   attr(value) {
-    this.resStr += `[${value}]`;
-    return this;
+    const AttrClass = this.SelectorClassConstructor('attr', value);
+    return new AttrClass();
   },
 
   pseudoClass(value) {
-    this.resStr += `:${value}`;
-    return this;
+    const PseudoClassClass = this.SelectorClassConstructor(
+      'pseudoClass',
+      value,
+    );
+    return new PseudoClassClass();
   },
 
   pseudoElement(value) {
-    this.resStr += `::${value}`;
-    return this;
+    const PseudoElementClass = this.SelectorClassConstructor(
+      'pseudoElement',
+      value,
+    );
+    return new PseudoElementClass();
   },
 
   combine(selector1, combinator, selector2) {
-    this.combineArr;
-
-    return this;
-  },
-
-  stringify() {
-    this.prevRes = this.resStr;
-    this.resStr = '';
-    this.combineArr.length = 0;
-    return this.prevRes;
+    const CombineClass = this.CombineClassConstructor(
+      selector1,
+      combinator,
+      selector2,
+    );
+    return new CombineClass();
   },
 };
-
-const builder = cssSelectorBuilder;
-console.log(builder.element('a').id('main').stringify());
-console.log(
-  builder.id('main').class('container').class('editable').stringify()
-);
 
 module.exports = {
   Rectangle,
