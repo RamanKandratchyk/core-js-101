@@ -86,8 +86,16 @@ function getPolynom(...args) {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  const store = new Map();
+  return function cache(x) {
+    if (store.has(x)) {
+      return store.get(x);
+    }
+    const result = func(x);
+    store.set(x, result);
+    return result;
+  };
 }
 
 /**
@@ -105,8 +113,18 @@ function memoize(/* func */) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  let attemptCount = 0;
+  return function resRetryer() {
+    do {
+      try {
+        return func();
+      } catch (error) {
+        attemptCount += 1;
+      }
+    } while (attemptCount < attempts);
+    return func();
+  };
 }
 
 /**
@@ -132,8 +150,29 @@ function retry(/* func, attempts */) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  return function resLogger(...args) {
+    // console.log(func, args, `${args}`);
+
+    let argStr = '';
+    args.forEach((arg) => {
+      if (Array.isArray(arg)) {
+        const elStr = arg.map((el) => {
+          if (typeof el === 'string') return `"${el}"`;
+          return el;
+        });
+
+        argStr += `[${elStr}],`;
+      } else argStr += `${arg},`;
+    });
+    const argStrAns = argStr.slice(0, -1);
+
+    logFunc(`${func.name}(${argStrAns}) starts`);
+    const result = func(...args);
+    logFunc(`${func.name}(${argStrAns}) ends`);
+    // console.log('result =', result);
+    return result;
+  };
 }
 
 /**
